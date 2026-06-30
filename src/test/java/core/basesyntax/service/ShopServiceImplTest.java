@@ -21,26 +21,30 @@ class ShopServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        Storage.getFruits().clear();
+        Storage.clear();
 
         Map<FruitTransaction.Operation, OperationHandler> handlers =
                 new HashMap<>();
 
         handlers.put(
                 FruitTransaction.Operation.BALANCE,
-                new BalanceOperation());
+                new BalanceOperation()
+        );
 
         handlers.put(
                 FruitTransaction.Operation.SUPPLY,
-                new SupplyOperation());
+                new SupplyOperation()
+        );
 
         handlers.put(
                 FruitTransaction.Operation.PURCHASE,
-                new PurchaseOperation());
+                new PurchaseOperation()
+        );
 
         handlers.put(
                 FruitTransaction.Operation.RETURN,
-                new ReturnOperation());
+                new ReturnOperation()
+        );
 
         OperationStrategy strategy =
                 new OperationStrategyImpl(handlers);
@@ -54,18 +58,21 @@ class ShopServiceImplTest {
                 new FruitTransaction(
                         FruitTransaction.Operation.BALANCE,
                         "banana",
-                        100),
+                        100
+                ),
                 new FruitTransaction(
                         FruitTransaction.Operation.PURCHASE,
                         "banana",
-                        20)
+                        20
+                )
         );
 
         shopService.process(transactions);
 
         Assertions.assertEquals(
                 80,
-                Storage.getFruitQuantity("banana"));
+                Storage.getFruitQuantity("banana")
+        );
     }
 
     @Test
