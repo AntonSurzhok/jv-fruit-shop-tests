@@ -12,6 +12,7 @@ import core.basesyntax.strategy.OperationStrategyImpl;
 import core.basesyntax.strategy.PurchaseOperation;
 import core.basesyntax.strategy.ReturnOperation;
 import core.basesyntax.strategy.SupplyOperation;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,9 +89,8 @@ class ShopServiceImplTest {
 
     @Test
     void process_nullTransaction_NotOk() {
-        List<FruitTransaction> transactions = List.of(
-                (FruitTransaction) null
-        );
+        List<FruitTransaction> transactions = new ArrayList<>();
+        transactions.add(null);
 
         assertThrows(
                 RuntimeException.class,
