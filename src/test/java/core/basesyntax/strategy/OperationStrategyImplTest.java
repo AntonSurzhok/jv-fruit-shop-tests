@@ -1,17 +1,19 @@
 package core.basesyntax.strategy;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import core.basesyntax.model.FruitTransaction;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 class OperationStrategyImplTest {
-    private OperationStrategy operationStrategy;
+    private static OperationStrategy operationStrategy;
 
-    @BeforeEach
-    void setUp() {
+    @BeforeAll
+    static void beforeAll() {
         Map<FruitTransaction.Operation, OperationHandler> handlers =
                 new HashMap<>();
 
@@ -19,17 +21,14 @@ class OperationStrategyImplTest {
                 FruitTransaction.Operation.BALANCE,
                 new BalanceOperation()
         );
-
         handlers.put(
                 FruitTransaction.Operation.SUPPLY,
                 new SupplyOperation()
         );
-
         handlers.put(
                 FruitTransaction.Operation.PURCHASE,
                 new PurchaseOperation()
         );
-
         handlers.put(
                 FruitTransaction.Operation.RETURN,
                 new ReturnOperation()
@@ -39,60 +38,42 @@ class OperationStrategyImplTest {
     }
 
     @Test
-    void get_balanceOperation_Ok() {
-        OperationHandler handler =
-                operationStrategy.get(FruitTransaction.Operation.BALANCE);
-
-        Assertions.assertInstanceOf(
+    void get_balanceHandler_Ok() {
+        assertInstanceOf(
                 BalanceOperation.class,
-                handler
+                operationStrategy.get(FruitTransaction.Operation.BALANCE)
         );
     }
 
     @Test
-    void get_supplyOperation_Ok() {
-        OperationHandler handler =
-                operationStrategy.get(FruitTransaction.Operation.SUPPLY);
-
-        Assertions.assertInstanceOf(
+    void get_supplyHandler_Ok() {
+        assertInstanceOf(
                 SupplyOperation.class,
-                handler
+                operationStrategy.get(FruitTransaction.Operation.SUPPLY)
         );
     }
 
     @Test
-    void get_purchaseOperation_Ok() {
-        OperationHandler handler =
-                operationStrategy.get(FruitTransaction.Operation.PURCHASE);
-
-        Assertions.assertInstanceOf(
+    void get_purchaseHandler_Ok() {
+        assertInstanceOf(
                 PurchaseOperation.class,
-                handler
+                operationStrategy.get(FruitTransaction.Operation.PURCHASE)
         );
     }
 
     @Test
-    void get_returnOperation_Ok() {
-        OperationHandler handler =
-                operationStrategy.get(FruitTransaction.Operation.RETURN);
-
-        Assertions.assertInstanceOf(
+    void get_returnHandler_Ok() {
+        assertInstanceOf(
                 ReturnOperation.class,
-                handler
+                operationStrategy.get(FruitTransaction.Operation.RETURN)
         );
     }
 
     @Test
-    void get_unknownOperation_NotOk() {
-        Map<FruitTransaction.Operation, OperationHandler> handlers =
-                new HashMap<>();
-
-        OperationStrategy strategy =
-                new OperationStrategyImpl(handlers);
-
-        Assertions.assertThrows(
+    void get_nullOperation_NotOk() {
+        assertThrows(
                 RuntimeException.class,
-                () -> strategy.get(FruitTransaction.Operation.BALANCE)
+                () -> operationStrategy.get(null)
         );
     }
 }

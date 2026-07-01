@@ -1,9 +1,9 @@
 package core.basesyntax.model;
 
 public class FruitTransaction {
-    private Operation operation;
-    private String fruit;
-    private int quantity;
+    private final Operation operation;
+    private final String fruit;
+    private final int quantity;
 
     public FruitTransaction(Operation operation,
                             String fruit,
@@ -47,6 +47,7 @@ public class FruitTransaction {
                     return operation;
                 }
             }
+
             throw new RuntimeException("Unknown operation: " + code);
         }
     }

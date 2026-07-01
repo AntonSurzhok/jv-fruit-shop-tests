@@ -1,8 +1,11 @@
 package core.basesyntax.strategy;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import core.basesyntax.db.Storage;
 import core.basesyntax.model.FruitTransaction;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,71 +14,69 @@ class PurchaseOperationTest {
 
     @BeforeEach
     void setUp() {
-        Storage.clear();
         purchaseOperation = new PurchaseOperation();
     }
 
+    @AfterEach
+    void tearDown() {
+        Storage.clear();
+    }
+
     @Test
-    void handle_validPurchase_Ok() {
+    void handle_purchase_Ok() {
         Storage.putFruit("banana", 100);
 
         FruitTransaction transaction = new FruitTransaction(
                 FruitTransaction.Operation.PURCHASE,
                 "banana",
-                40
+                20
         );
 
         purchaseOperation.handle(transaction);
 
-        Assertions.assertEquals(
-                60,
-                Storage.getFruitQuantity("banana")
-        );
+        assertEquals(80, Storage.getFruitQuantity("banana"));
     }
 
     @Test
-    void handle_purchaseAllFruit_Ok() {
-        Storage.putFruit("apple", 50);
+    void handle_purchaseAll_Ok() {
+        Storage.putFruit("banana", 100);
 
         FruitTransaction transaction = new FruitTransaction(
                 FruitTransaction.Operation.PURCHASE,
-                "apple",
-                50
+                "banana",
+                100
         );
 
         purchaseOperation.handle(transaction);
 
-        Assertions.assertEquals(
-                0,
-                Storage.getFruitQuantity("apple")
-        );
+        assertEquals(0, Storage.getFruitQuantity("banana"));
     }
 
     @Test
     void handle_notEnoughFruit_NotOk() {
-        Storage.putFruit("orange", 10);
+        Storage.putFruit("banana", 50);
 
         FruitTransaction transaction = new FruitTransaction(
                 FruitTransaction.Operation.PURCHASE,
-                "orange",
-                15
+                "banana",
+                70
         );
 
-        Assertions.assertThrows(
+        assertThrows(
                 RuntimeException.class,
                 () -> purchaseOperation.handle(transaction)
         );
     }
 
     @Test
-    void handle_fruitDoesNotExist_NotOk() {
+    void handle_fruitAbsent_NotOk() {
         FruitTransaction transaction = new FruitTransaction(
                 FruitTransaction.Operation.PURCHASE,
-                "kiwi",
-                5
+                "banana",
+                10
         );
 
-        Assertions.assertThrows(
+        assertThrows(
                 RuntimeException.class,
                 () -> purchaseOperation.handle(transaction)
         );

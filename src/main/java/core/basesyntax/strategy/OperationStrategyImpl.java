@@ -4,13 +4,10 @@ import core.basesyntax.model.FruitTransaction;
 import java.util.Map;
 
 public class OperationStrategyImpl implements OperationStrategy {
-
-    private final Map<FruitTransaction.Operation,
-            OperationHandler> handlers;
+    private final Map<FruitTransaction.Operation, OperationHandler> handlers;
 
     public OperationStrategyImpl(
-            Map<FruitTransaction.Operation,
-                    OperationHandler> handlers) {
+            Map<FruitTransaction.Operation, OperationHandler> handlers) {
         this.handlers = handlers;
     }
 
@@ -20,9 +17,11 @@ public class OperationStrategyImpl implements OperationStrategy {
 
         if (handler == null) {
             throw new RuntimeException(
-                    "Unsupported operation: " + operation);
+                    "Unsupported operation: " + operation
+            );
         }
 
         return handler;
     }
 }
+

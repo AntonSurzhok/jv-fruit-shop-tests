@@ -1,5 +1,8 @@
 package core.basesyntax.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import core.basesyntax.db.Storage;
 import core.basesyntax.model.FruitTransaction;
 import core.basesyntax.strategy.BalanceOperation;
@@ -12,17 +15,15 @@ import core.basesyntax.strategy.SupplyOperation;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 class ShopServiceImplTest {
-    private ShopService shopService;
+    private static ShopService shopService;
 
-    @BeforeEach
-    void setUp() {
-        Storage.clear();
-
+    @BeforeAll
+    static void beforeAll() {
         Map<FruitTransaction.Operation, OperationHandler> handlers =
                 new HashMap<>();
 
@@ -30,17 +31,14 @@ class ShopServiceImplTest {
                 FruitTransaction.Operation.BALANCE,
                 new BalanceOperation()
         );
-
         handlers.put(
                 FruitTransaction.Operation.SUPPLY,
                 new SupplyOperation()
         );
-
         handlers.put(
                 FruitTransaction.Operation.PURCHASE,
                 new PurchaseOperation()
         );
-
         handlers.put(
                 FruitTransaction.Operation.RETURN,
                 new ReturnOperation()
@@ -50,6 +48,11 @@ class ShopServiceImplTest {
                 new OperationStrategyImpl(handlers);
 
         shopService = new ShopServiceImpl(strategy);
+    }
+
+    @AfterEach
+    void tearDown() {
+        Storage.clear();
     }
 
     @Test
@@ -69,7 +72,7 @@ class ShopServiceImplTest {
 
         shopService.process(transactions);
 
-        Assertions.assertEquals(
+        assertEquals(
                 80,
                 Storage.getFruitQuantity("banana")
         );
@@ -77,9 +80,21 @@ class ShopServiceImplTest {
 
     @Test
     void process_nullTransactions_NotOk() {
-        Assertions.assertThrows(
+        assertThrows(
                 RuntimeException.class,
                 () -> shopService.process(null)
+        );
+    }
+
+    @Test
+    void process_nullTransaction_NotOk() {
+        List<FruitTransaction> transactions = List.of(
+                (FruitTransaction) null
+        );
+
+        assertThrows(
+                RuntimeException.class,
+                () -> shopService.process(transactions)
         );
     }
 }

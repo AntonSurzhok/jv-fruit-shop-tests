@@ -34,24 +34,45 @@ public class Main {
 
         DataConverter dataConverter = new DataConverterImpl();
 
-        Map<FruitTransaction.Operation, OperationHandler> handlers = new HashMap<>();
-        handlers.put(FruitTransaction.Operation.BALANCE, new BalanceOperation());
-        handlers.put(FruitTransaction.Operation.SUPPLY, new SupplyOperation());
-        handlers.put(FruitTransaction.Operation.PURCHASE, new PurchaseOperation());
-        handlers.put(FruitTransaction.Operation.RETURN, new ReturnOperation());
+        Map<FruitTransaction.Operation, OperationHandler> operationHandlers =
+                new HashMap<>();
 
-        OperationStrategy operationStrategy = new OperationStrategyImpl(handlers);
-        ShopService shopService = new ShopServiceImpl(operationStrategy);
+        operationHandlers.put(
+                FruitTransaction.Operation.BALANCE,
+                new BalanceOperation()
+        );
+        operationHandlers.put(
+                FruitTransaction.Operation.SUPPLY,
+                new SupplyOperation()
+        );
+        operationHandlers.put(
+                FruitTransaction.Operation.PURCHASE,
+                new PurchaseOperation()
+        );
+        operationHandlers.put(
+                FruitTransaction.Operation.RETURN,
+                new ReturnOperation()
+        );
 
-        List<FruitTransaction> transactions =
+        OperationStrategy operationStrategy =
+                new OperationStrategyImpl(operationHandlers);
+
+        ShopService shopService =
+                new ShopServiceImpl(operationStrategy);
+
+        final List<FruitTransaction> transactions =
                 dataConverter.convertToTransaction(inputData);
 
         shopService.process(transactions);
 
-        ReportGenerator reportGenerator = new ReportGeneratorImpl();
+        ReportGenerator reportGenerator =
+                new ReportGeneratorImpl();
+
         String report = reportGenerator.getReport();
 
-        FileWriter fileWriter = new FileWriterImpl();
+        FileWriter fileWriter =
+                new FileWriterImpl();
+
         fileWriter.write(report, OUTPUT_FILE);
     }
 }

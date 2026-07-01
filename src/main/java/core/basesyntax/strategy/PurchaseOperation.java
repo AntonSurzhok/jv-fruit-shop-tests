@@ -9,9 +9,12 @@ public class PurchaseOperation implements OperationHandler {
     public void handle(FruitTransaction transaction) {
         int current = Storage.getFruitQuantity(transaction.getFruit());
 
-        if (current - transaction.getQuantity() < 0) {
+        if (current < transaction.getQuantity()) {
             throw new RuntimeException(
-                    "Not enough " + transaction.getFruit() + " in storage");
+                    "Not enough "
+                            + transaction.getFruit()
+                            + " in storage"
+            );
         }
 
         Storage.putFruit(

@@ -1,16 +1,18 @@
 package core.basesyntax.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import core.basesyntax.model.FruitTransaction;
 import java.util.List;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 class DataConverterImplTest {
-    private DataConverter dataConverter;
+    private static DataConverter dataConverter;
 
-    @BeforeEach
-    void setUp() {
+    @BeforeAll
+    static void beforeAll() {
         dataConverter = new DataConverterImpl();
     }
 
@@ -18,46 +20,38 @@ class DataConverterImplTest {
     void convertToTransaction_validData_Ok() {
         List<String> input = List.of(
                 "type,fruit,quantity",
-                "b,banana,20",
-                "s,banana,30",
-                "p,banana,10",
-                "r,banana,5"
+                "b,banana,100",
+                "s,banana,20"
         );
 
-        List<FruitTransaction> transactions =
+        List<FruitTransaction> result =
                 dataConverter.convertToTransaction(input);
 
-        Assertions.assertEquals(4, transactions.size());
-
-        Assertions.assertEquals(
+        assertEquals(2, result.size());
+        assertEquals(
                 FruitTransaction.Operation.BALANCE,
-                transactions.get(0).getOperation());
-
-        Assertions.assertEquals(
-                "banana",
-                transactions.get(0).getFruit());
-
-        Assertions.assertEquals(
-                20,
-                transactions.get(0).getQuantity());
+                result.get(0).getOperation()
+        );
+        assertEquals("banana", result.get(0).getFruit());
+        assertEquals(100, result.get(0).getQuantity());
     }
 
     @Test
-    void convertToTransaction_nullData_NotOk() {
-        Assertions.assertThrows(
+    void convertToTransaction_nullInput_NotOk() {
+        assertThrows(
                 RuntimeException.class,
                 () -> dataConverter.convertToTransaction(null)
         );
     }
 
     @Test
-    void convertToTransaction_invalidCsv_NotOk() {
+    void convertToTransaction_invalidLine_NotOk() {
         List<String> input = List.of(
                 "type,fruit,quantity",
-                "b,banana"
+                "invalid,line"
         );
 
-        Assertions.assertThrows(
+        assertThrows(
                 RuntimeException.class,
                 () -> dataConverter.convertToTransaction(input)
         );
@@ -70,7 +64,20 @@ class DataConverterImplTest {
                 "b,banana,-10"
         );
 
-        Assertions.assertThrows(
+        assertThrows(
+                RuntimeException.class,
+                () -> dataConverter.convertToTransaction(input)
+        );
+    }
+
+    @Test
+    void convertToTransaction_unknownOperation_NotOk() {
+        List<String> input = List.of(
+                "type,fruit,quantity",
+                "x,banana,10"
+        );
+
+        assertThrows(
                 RuntimeException.class,
                 () -> dataConverter.convertToTransaction(input)
         );

@@ -1,8 +1,10 @@
 package core.basesyntax.strategy;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import core.basesyntax.db.Storage;
 import core.basesyntax.model.FruitTransaction;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,41 +13,39 @@ class SupplyOperationTest {
 
     @BeforeEach
     void setUp() {
-        Storage.clear();
         supplyOperation = new SupplyOperation();
     }
 
-    @Test
-    void handle_existingFruit_Ok() {
-        Storage.putFruit("apple", 30);
-
-        FruitTransaction transaction = new FruitTransaction(
-                FruitTransaction.Operation.SUPPLY,
-                "apple",
-                20
-        );
-
-        supplyOperation.handle(transaction);
-
-        Assertions.assertEquals(
-                50,
-                Storage.getFruitQuantity("apple")
-        );
+    @AfterEach
+    void tearDown() {
+        Storage.clear();
     }
 
     @Test
     void handle_newFruit_Ok() {
         FruitTransaction transaction = new FruitTransaction(
                 FruitTransaction.Operation.SUPPLY,
-                "orange",
-                40
+                "banana",
+                50
         );
 
         supplyOperation.handle(transaction);
 
-        Assertions.assertEquals(
-                40,
-                Storage.getFruitQuantity("orange")
+        assertEquals(50, Storage.getFruitQuantity("banana"));
+    }
+
+    @Test
+    void handle_existingFruit_Ok() {
+        Storage.putFruit("banana", 100);
+
+        FruitTransaction transaction = new FruitTransaction(
+                FruitTransaction.Operation.SUPPLY,
+                "banana",
+                20
         );
+
+        supplyOperation.handle(transaction);
+
+        assertEquals(120, Storage.getFruitQuantity("banana"));
     }
 }
